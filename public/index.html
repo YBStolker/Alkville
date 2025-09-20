@@ -1,6 +1,9 @@
 <!DOCTYPE html>
 <html>
 	<head>
+		<meta
+			http-equiv="Permissions-Policy"
+			content="interest-cohort=()" />
 		<meta charset="utf-8" />
 		<meta
 			http-equiv="X-UA-Compatible"
@@ -17,13 +20,39 @@
 			rel="stylesheet"
 			type="text/css"
 			media="screen"
-			href="/public/style/rendered.css" />
-		<script src="/public/script/main.js"></script>
+			href="/public/css/rendered.css" />
+		<script src="/public/js/ext/jQuery.js"></script>
+		<script src="/public/js/ext/htmx.js"></script>
+		<script src="/public/js/util.js"></script>
+		<script src="/public/js/html_templates.js"></script>
+		<script src="/public/js/catalog.js"></script>
+		<script src="/public/js/test.js"></script>
 	</head>
 	<body>
-		<div class="flex">
-			<div class="w-64">
-
+		<div
+			id="resource-locations"
+			class="flex">
+			<div
+				id="iron-mine"
+				class="p-2">
+				<div id="label">Iron mine</div>
+				<div id="duration">2.5s</div>
+				<div id="progress-bar">
+					<progress
+						value="32"
+						max="100"></progress>
+				</div>
+			</div>
+			<div
+				id="copper-mine"
+				class="p-2">
+				<div id="label">Copper mine</div>
+				<div id="duration">3s</div>
+				<div id="progress-bar">
+					<progress
+						value="40"
+						max="100"></progress>
+				</div>
 			</div>
 		</div>
 	</body>

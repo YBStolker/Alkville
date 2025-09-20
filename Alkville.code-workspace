@@ -50,7 +50,7 @@
             },
             {
                 "label": "Tailwind watcher",
-                "command": "npx @tailwindcss/cli -i ./style/main.css -o ./public/style/rendered.css --watch",
+                "command": "npx @tailwindcss/cli -i ./style/main.css -o ./public/css/rendered.css --watch",
                 "type": "shell",
                 "problemMatcher": [],
                 "presentation": {
