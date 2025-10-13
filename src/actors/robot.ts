@@ -1,14 +1,15 @@
-import { Actor, Color, Engine, Vector } from "excalibur";
+import { Actor, CollisionType, Color, Engine, Vector } from "excalibur";
 
 export class Robot extends Actor {
-	maxSpeed = 50;
-	private _selected = false;
+	maxSpeed = 100;
+
+	#selected = false;
 	get selected(): boolean {
-		return this._selected;
+		return this.#selected;
 	}
 	set selected(val: boolean) {
-        this._selected = val;
-        this.color = this._selected ? Color.Azure : Color.Yellow;
+		this.#selected = val;
+		this.color = this.#selected ? Color.Cyan : Color.Yellow;
 	}
 
 	constructor(pos: Vector) {
@@ -16,8 +17,8 @@ export class Robot extends Actor {
 			pos,
 			radius: 8,
 			color: Color.Yellow,
+			collisionType: CollisionType.Active,
+			
 		});
 	}
-
-	override onPostUpdate(engine: Engine, elapsed: number): void {}
 }

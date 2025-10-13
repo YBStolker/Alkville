@@ -1,4 +1,4 @@
-import { PointerButton, PointerEvent, Vector } from "excalibur";
+import { Keys, PointerButton, PointerEvent, Vector } from "excalibur";
 import { World } from "../world";
 import { Robot } from "../actors/robot";
 import { isWithinBox } from "../util";
@@ -15,7 +15,7 @@ export class MouseHandler {
 			}
 
 			if (event.button === PointerButton.Right) {
-				this.spawnRobot(event);
+				this.moveSelectedUnits(event);
 			}
 		});
 
@@ -24,38 +24,66 @@ export class MouseHandler {
 				this.endSelection(event);
 			}
 		});
+
+		world.input.pointers.on("move", event => {
+			this.updateSelection(event);
+		});
 	}
 
-	spawnRobot(event: PointerEvent) {
+	moveSelectedUnits(event: PointerEvent) {
 		const worldPos = this.world.engine.screen.pageToWorldCoordinates(event.pagePos);
-		this.world.add(new Robot(worldPos));
+		this.world.actors
+			.filter(actor => actor instanceof Robot)
+			.filter(robot => robot.selected)
+			.forEach(robot => {
+				if (!this.world.input.keyboard.isHeld(Keys.ShiftLeft)) {
+					robot.actions.clearActions();
+				}
+				robot.actions.moveTo(worldPos, robot.maxSpeed);
+			});
 	}
 
 	startSelection(event: PointerEvent) {
 		this.selectionStart = this.world.engine.screen.pageToWorldCoordinates(event.pagePos);
-		this.selection = new Selection(this.selectionStart);
+	}
+
+	updateSelection(event: PointerEvent) {
+		if (!this.selectionStart) {
+			return;
+		}
+
+		if (this.selection) {
+			this.selection.kill(); // Width and height are readonly, so we have to kill and re-add.
+			this.selection = undefined;
+		}
+
+		const currentMousePos = this.world.engine.screen.pageToWorldCoordinates(event.pagePos);
+		const pos = this.selectionStart.lerp(currentMousePos, 0.5);
+		const selectionWidth = Math.abs(currentMousePos.x - this.selectionStart.x);
+		const selectionHeight = Math.abs(currentMousePos.y - this.selectionStart.y);
+
+		this.selection = new Selection(pos, selectionWidth, selectionHeight);
 		this.world.add(this.selection);
 	}
 
-    updateSelection(event: PointerEvent) {
-        // TODO: add visual indicator for selection region
-		const currentPos = this.world.engine.screen.pageToWorldCoordinates(event.pagePos);
-    }
-
 	endSelection(event: PointerEvent) {
+		if (this.selection) {
+			this.selection.kill();
+			this.selection = undefined;
+		}
+
 		if (!this.selectionStart) {
 			return;
 		}
 
 		const selectionEnd = this.world.engine.screen.pageToWorldCoordinates(event.pagePos);
 
-		for (const actor of this.world.actors) {
-			if (!(actor instanceof Robot)) {
-				continue;
-			}
-
-			actor.selected = isWithinBox(actor.pos, this.selectionStart, selectionEnd);
-		}
+		const selectionStart = this.selectionStart;
+		this.world.actors
+			.filter(actor => actor instanceof Robot)
+			.forEach(robot => {
+				robot.selected = isWithinBox(robot.pos, selectionStart, selectionEnd);
+			});
 
 		this.selectionStart = undefined;
 	}

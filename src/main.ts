@@ -1,12 +1,15 @@
-import * as ex from "excalibur";
+import { Color, DisplayMode, Engine, SolverStrategy } from "excalibur";
 import { World } from "./world";
 
-const game = new ex.Engine({
+const game = new Engine({
 	canvasElementId: "game",
+	physics: {
+		solver: SolverStrategy.Realistic,
+	},
 	width: 1200,
 	height: 900,
-	displayMode: ex.DisplayMode.FitContainerAndFill,
-	backgroundColor: ex.Color.fromHex("#696969"), // Nice
+	displayMode: DisplayMode.FitContainerAndFill,
+	backgroundColor: Color.fromHex("#696969"), // Nice
 	pixelArt: true,
 	pixelRatio: 1,
 	scenes: {
@@ -15,5 +18,5 @@ const game = new ex.Engine({
 });
 
 game.start().then(() => {
-    game.goToScene("World");
+	game.goToScene("World");
 });
