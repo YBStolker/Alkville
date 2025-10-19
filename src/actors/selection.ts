@@ -1,13 +1,13 @@
-import { Actor, Color, Vector } from "excalibur";
+import * as ex from "excalibur";
 
-export class Selection extends Actor {
-	constructor(pos: Vector, width: number, height: number) {
+export class Selection extends ex.Actor {
+	constructor(pos: ex.Vector, width: number, height: number) {
 		super({
 			pos,
-			color: Color.Green,
 			width,
 			height,
 			opacity: 0.15,
+			color: ex.Color.Green,
 		});
 	}
 }

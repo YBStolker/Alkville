@@ -1,15 +1,15 @@
-import { Color, DisplayMode, Engine, SolverStrategy } from "excalibur";
+import * as ex from "excalibur";
 import { World } from "./world";
 
-const game = new Engine({
+const game = new ex.Engine({
 	canvasElementId: "game",
 	physics: {
-		solver: SolverStrategy.Realistic,
+		solver: ex.SolverStrategy.Realistic,
 	},
 	width: 1200,
 	height: 900,
-	displayMode: DisplayMode.FitContainerAndFill,
-	backgroundColor: Color.fromHex("#696969"), // Nice
+	displayMode: ex.DisplayMode.FitContainerAndFill,
+	backgroundColor: ex.Color.fromHex("#696969"), // Nice
 	pixelArt: true,
 	pixelRatio: 1,
 	scenes: {
