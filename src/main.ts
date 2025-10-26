@@ -1,5 +1,6 @@
 import * as ex from "excalibur";
 import { World } from "./world";
+import { InputHandler } from "./handlers/inputHandler";
 
 const game = new ex.Engine({
 	canvasElementId: "game",
@@ -16,6 +17,8 @@ const game = new ex.Engine({
 		World,
 	},
 });
+
+
 
 game.start().then(() => {
 	game.goToScene("World");

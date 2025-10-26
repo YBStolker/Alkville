@@ -1,7 +1,8 @@
 import { Robot } from "./actors/robot";
 import * as ex from "excalibur";
 import { InputHandler } from "./handlers/inputHandler";
-import { Rock } from "./resources/rock";
+import { ResourceNode, Rock } from "./resources/rock";
+import { convertGridToWorldPos } from "./util";
 
 export class World extends ex.Scene {
 	inputHandler?: InputHandler;
@@ -13,8 +14,8 @@ export class World extends ex.Scene {
 
 	onInitialize(engine: ex.Engine): void {
 		this.inputHandler = new InputHandler(this);
-		this.randomlySpawnSomeRobot(40, 200);
-		this.randomlySpawnSomeResources(20, 500);
+		this.randomlySpawnSomeRobot(5, 200);
+		// this.randomlySpawnSomeResources(50, 10);
 	}
 
 	onPostUpdate(engine: ex.Engine, elapsed: number): void {
@@ -43,10 +44,25 @@ export class World extends ex.Scene {
 	}
 
 	randomlySpawnSomeResources(count: number, limit: number) {
+		const usedPos: ex.Vector[] = [];
+
 		for (let i = 0; i < count; i++) {
-			const x = Math.floor(Math.random() * limit) * (Math.random() > 0.5 ? 1 : -1);
-			const y = Math.floor(Math.random() * limit) * (Math.random() > 0.5 ? 1 : -1);
-			const rock = new Rock(this, ex.vec(x, y));
+			let rockPos = null;
+			for (let j = 0; j < 10; j++) {
+				const x = Math.floor(Math.random() * limit) * (Math.random() > 0.5 ? 1 : -1);
+				const y = Math.floor(Math.random() * limit) * (Math.random() > 0.5 ? 1 : -1);
+				const pos = ex.vec(x, y);
+				if (!usedPos.some(p => p.x === pos.x && p.y === pos.y)) {
+					rockPos = pos;
+					break;
+				}
+			}
+
+			if (rockPos === null) return;
+
+			usedPos.push(rockPos);
+
+			const rock = new Rock(this, convertGridToWorldPos(rockPos));
 			this.add(rock);
 		}
 	}

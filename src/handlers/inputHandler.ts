@@ -3,7 +3,7 @@ import { World } from "../world.ts";
 import { Robot } from "../actors/robot.ts";
 import { Selection } from "../actors/selection.ts";
 import { MoveRobotAction } from "../actions/moveRobotAction.ts";
-import { getBoundingBoxFrom } from "../util.ts";
+import { getBoundingBoxFrom, giftWrap } from "../util.ts";
 
 const startSize = 15;
 
@@ -18,9 +18,11 @@ export class InputHandler {
 	selection?: Selection;
 
 	cameraDragFrom?: ex.Vector;
+	pressedDown = false;
 
 	constructor(private world: World) {
-		world.input.pointers.on("down", event => {
+		world.engine.input.pointers.on("down", event => {
+			this.pressedDown = true;
 			if (event.button === ex.PointerButton.Left) {
 				this.startSelection(event);
 			}
@@ -30,11 +32,7 @@ export class InputHandler {
 			}
 
 			if (event.button === ex.PointerButton.Right) {
-				if (!skipPointerDownInput[ex.PointerButton.Right]) {
-					this.moveSelectedUnits(event);
-				} else {
-					skipPointerDownInput[ex.PointerButton.Right] = false;
-				}
+				this.moveSelectedUnits(event);
 			}
 		});
 
@@ -49,12 +47,28 @@ export class InputHandler {
 		});
 
 		world.input.pointers.on("up", event => {
+			if (!this.pressedDown) {
+				return;
+			}
+
+			this.pressedDown = false;
 			if (event.button === ex.PointerButton.Left) {
 				this.stopSelection();
 			}
 
 			if (event.button === ex.PointerButton.Middle) {
 				this.stopCameraDrag();
+			}
+		});
+
+		world.input.keyboard.on("press", event => {
+			if (event.key === ex.Keys.S) {
+				const robots = this.world.actors.filter(actor => actor instanceof Robot);
+				robots.forEach(robot => (robot.giftWrap = false));
+				const selectedRobots = robots.filter(robot => robot.selected);
+				const points = selectedRobots.map(robot => robot.pos);
+				const giftWrapPoints = giftWrap(points);
+				robots.forEach(robot => (robot.giftWrap = giftWrapPoints.includes(robot.pos)));
 			}
 		});
 
@@ -73,10 +87,12 @@ export class InputHandler {
 				if (!this.world.input.keyboard.isHeld(ex.Keys.ShiftLeft)) {
 					robot.actions.clearActions();
 				}
+
 				const moveAction = new MoveRobotAction({
 					robot,
 					destination: worldPos,
 				});
+
 				robot.actions.getQueue().add(moveAction);
 			});
 	}
