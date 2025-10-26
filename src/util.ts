@@ -71,7 +71,9 @@ export class Instant {
 		this.start = Date.now();
 	}
 }
-
+/**
+ * A (not super optimized) [gift wrapping alogrithm](https://en.wikipedia.org/wiki/Gift_wrapping_algorithm)
+ */
 export function giftWrap(points: ex.Vector[]): ex.Vector[] {
 	console.log(`[${points.map(vec => vecStr(vec)).join(", ")}]`);
 	const giftWrap: ex.Vector[] = [];
